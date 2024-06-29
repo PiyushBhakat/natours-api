@@ -12,6 +12,9 @@ const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
 
+// Middleware to serve static files
+app.use(express.static(`${__dirname}/public`));
+
 // Routing - How an application responds to client requests to specific endpoints and HTTP methods
 // app.get('/', (req, res) => {
     // Automatically sets the Content-Type header
