@@ -8,11 +8,24 @@ const tours = JSON.parse(
 // The param middleware function
 exports.checkId = (req, res, next, val) => {
     if (val > tours.length) {
+        // Remember that it's important to return from here
         return res.status(404).json({
             status: 'fail',
             message: 'Invalid ID'
         });
     } 
+    next();
+}
+
+exports.checkBody = (req, res, next) => {
+    const objProperties = Object.keys(req.body);
+    if (!objProperties.includes('name') && !objProperties.includes('price')) {
+        return res.status(400).json({
+            status: "failure",
+            message: "Properties name or price not found!"
+        });
+    }
+
     next();
 }
 
