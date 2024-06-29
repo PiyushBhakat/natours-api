@@ -6,8 +6,6 @@ const tourRouter = require('./routes/tourRoutes');
 // This will essentially attach several functions to the app "variable"
 const app = express();
 
-const port = 3000;
-
 // We use app.use to include middleware, which is basically a function to modify the incoming request
 // By using this middleware, the request which is in JSON is converted into an object, and then attached
 // to the req.body property of the request object, making it accessible to route handlers
@@ -43,9 +41,7 @@ app.use((req, res, next) => {
 // The tourRouter is mounted on the 'api/v1/tours' route, hence it's called mounting
 app.use('/api/v1/tours', tourRouter); // This is the middleware router
 
-// Starting a server
-app.listen(port, () => {
-    console.log(`App running on port ${port}...`);
-});
+// Better to separate app and server 
+module.exports = app;
 
 
