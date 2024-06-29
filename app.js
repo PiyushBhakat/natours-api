@@ -1,9 +1,11 @@
-const fs = require('fs');
+// This file is actually used for all the middleware
 const express = require('express');
 const morgan = require('morgan'); // HTTP request logger middleware
+const tourRouter = require('./routes/tourRoutes');
 
 // This will essentially attach several functions to the app "variable"
 const app = express();
+
 const port = 3000;
 
 // We use app.use to include middleware, which is basically a function to modify the incoming request
@@ -37,87 +39,6 @@ app.use((req, res, next) => {
 });
 
 // Reading our files (__dirname is the current folder where the script is located)
-// We're doing this in the top-level code, because we only need to read the file once
-const tours = JSON.parse(
-    fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
-
-// (req, res) is known as the route handler
-const getAllTours = (req, res) => {
-    res.status(200).json({
-        // Using the JSend specification
-        status: 'success',
-        result: tours.length,
-        data: {
-            tours
-        }
-    });
-}
-
-const getTour = (req, res) => {
-    const id = req.params.id * 1; // Converting the value of id key (string) to a number, cool trick
-
-    if (id > tours.length) {
-        res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID'
-        });
-    } else {
-    
-        const tour = tours.find(el => el.id === id);
-
-        res.status(200).json({
-            status: 'success',
-            data: {
-                tour
-            }
-        });
-    }
-}
-
-const deleteTour = (req, res) => {
-   if (req.params.id > tours.length) {
-    res.status(404).json({
-        status: 'fail',
-        message: 'Invalid ID'
-    });
-   } else {
-    res.status(204).json({
-        status: 'success',
-        message: 'Deleted the tour!',
-        data: null
-    });
-   }
-}
-
-const updateTour = (req, res) => {
-    const newId = tours[tours.length - 1].id + 1;
-    const newTour = Object.assign({ id: newId }, req.body);
-
-    tours.push(newTour);
-    fs.writeFile(
-        `${__dirname}/dev-data/data/tours-simple.json`,
-        JSON.stringify(tours), // Converting the object into JSON so it can be stored into the file
-        (err) => {
-            res.status(201).json({
-                status: 'success',
-                data: {
-                    tour: newTour,
-                }
-            });
-        }
-    );
-}
-
-
-// Instead of having to define the endpoint each point for every route handler, we can also do this
-
-// This middleware function creates a new router object, and this router behaves like a mini Express app
-const tourRouter = express.Router();
-const userRouter = express.Router(); // We actually haven't defined user routes just yet
-
-tourRouter.route('/').get(getAllTours).post(updateTour);
-tourRouter.route('/:id').get(getTour).delete(deleteTour); 
 
 // The tourRouter is mounted on the 'api/v1/tours' route, hence it's called mounting
 app.use('/api/v1/tours', tourRouter); // This is the middleware router
