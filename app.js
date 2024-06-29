@@ -109,15 +109,18 @@ const updateTour = (req, res) => {
     );
 }
 
-// We just refactored our code significantly
-app.get('/api/v1/tours', getAllTours);
-app.post('/api/v1/tours', updateTour);
-app.get('/api/v1/tours/:id', getTour);
-app.delete('/api/v1/tours/:id', deleteTour);
 
 // Instead of having to define the endpoint each point for every route handler, we can also do this
-app.route('/api/v1/tours').get(getAllTours).post(updateTour);
-app.route('/api/v1/tours/:id').get(getTour).delete(deleteTour);
+
+// This middleware function creates a new router object, and this router behaves like a mini Express app
+const tourRouter = express.Router();
+const userRouter = express.Router(); // We actually haven't defined user routes just yet
+
+tourRouter.route('/').get(getAllTours).post(updateTour);
+tourRouter.route('/:id').get(getTour).delete(deleteTour); 
+
+// The tourRouter is mounted on the 'api/v1/tours' route, hence it's called mounting
+app.use('/api/v1/tours', tourRouter); // This is the middleware router
 
 // Starting a server
 app.listen(port, () => {
