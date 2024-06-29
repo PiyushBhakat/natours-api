@@ -3,6 +3,9 @@ const tourController = require('../controllers/tourControllers');
 
 const router = express.Router();
 
+// Param middleware - to check for parameters, useful for checking if the id is valid in this case
+router.param('id', tourController.checkId);
+
 router
     .route('/')
     .get(tourController.getAllTours)
